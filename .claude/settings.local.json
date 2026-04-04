@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \" import sys, json for line in sys.stdin: msg = json.loads\\(line\\) if msg.get\\('role'\\) == 'assistant': content = msg.get\\('content', ''\\) if isinstance\\(content, list\\): for block in content: if isinstance\\(block, dict\\) and block.get\\('type'\\) == 'text': print\\(block['text']\\) print\\('---SEPARATOR---'\\) elif isinstance\\(content, str\\): print\\(content\\) print\\('---SEPARATOR---'\\) \")",
+      "Bash(python3:*)",
+      "Bash(chmod +x:*)"
+    ]
+  }
+}
