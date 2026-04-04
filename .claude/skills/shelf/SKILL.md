@@ -4,3 +4,7 @@ description: Shelve conversation history to disk, freeing context space while pr
 ---
 
 Run the context shelving process now. Write a curated history chunk covering the conversation since the last shelf (or the entire conversation if this is the first shelf). Follow the shelving instructions in CLAUDE.md exactly.
+
+After writing the history chunk and TOC to disk, tell the user:
+
+"Context shelved. Run `/clear` to free context — your history is safely on disk and the TOC will reload automatically on the fresh session."
