@@ -16,7 +16,8 @@ Context Shelf intercepts compaction and instead writes curated, structured histo
 
 ## How It Works
 
-1. A **PreCompact hook** fires before Claude Code compacts context
+1. A **SessionStart hook** injects the TOC from prior sessions so Claude knows what's on the shelf
+2. A **PreCompact hook** fires before Claude Code compacts context
 2. Claude writes a curated history chunk to `.claude/history/<timestamp>.md` — organized by topic, deduplicated, with provenance tags
 3. A **table of contents** stays in context so Claude knows what's on the shelf
 4. Claude retrieves shelved context on demand when it needs earlier details
@@ -41,6 +42,7 @@ curl -fsSL https://raw.githubusercontent.com/Pinnacle-Solutions-Group/context-sh
 ```
 
 This will:
+- Create `.claude/hooks/context-shelf-session-start.sh` (SessionStart hook — loads TOC)
 - Create `.claude/hooks/context-shelf-trigger.sh` (PreCompact hook)
 - Create `.claude/skills/shelf/SKILL.md` (`/shelf` command)
 - Add the PreCompact hook to `.claude/settings.json` (safely merges if file exists)
@@ -71,7 +73,8 @@ Shelved history persists in `.claude/history/`. When you start a new Claude Code
 your-project/
 ├── .claude/
 │   ├── hooks/
-│   │   └── context-shelf-trigger.sh   # PreCompact hook
+│   │   ├── context-shelf-session-start.sh  # SessionStart hook
+│   │   └── context-shelf-trigger.sh        # PreCompact hook
 │   ├── skills/
 │   │   └── shelf/
 │   │       └── SKILL.md               # /shelf command

@@ -13,16 +13,17 @@ mkdir -p .claude/hooks
 mkdir -p .claude/skills/shelf
 mkdir -p .claude/history
 
-# Download hook
+# Download hooks
 curl -fsSL "$REPO_RAW/.claude/hooks/context-shelf-trigger.sh" -o .claude/hooks/context-shelf-trigger.sh
-chmod +x .claude/hooks/context-shelf-trigger.sh
+curl -fsSL "$REPO_RAW/.claude/hooks/context-shelf-session-start.sh" -o .claude/hooks/context-shelf-session-start.sh
+chmod +x .claude/hooks/context-shelf-trigger.sh .claude/hooks/context-shelf-session-start.sh
 
 # Download skill
 curl -fsSL "$REPO_RAW/.claude/skills/shelf/SKILL.md" -o .claude/skills/shelf/SKILL.md
 
 # Merge or create settings.json
 SETTINGS_FILE=".claude/settings.json"
-HOOK_CONFIG='{"hooks":{"PreCompact":[{"matcher":"","hooks":[{"type":"command","command":".claude/hooks/context-shelf-trigger.sh"}]}]}}'
+HOOK_CONFIG='{"hooks":{"SessionStart":[{"matcher":"","hooks":[{"type":"command","command":".claude/hooks/context-shelf-session-start.sh"}]}],"PreCompact":[{"matcher":"","hooks":[{"type":"command","command":".claude/hooks/context-shelf-trigger.sh"}]}]}}'
 
 if [ -f "$SETTINGS_FILE" ]; then
   # Check if jq is available for safe merge
