@@ -45,7 +45,9 @@ This will:
 - Create `.claude/hooks/context-shelf-session-start.sh` (SessionStart hook — loads TOC)
 - Create `.claude/hooks/context-shelf-trigger.sh` (PreCompact hook)
 - Create `.claude/skills/shelf/SKILL.md` (`/shelf` command)
-- Add the PreCompact hook to `.claude/settings.json` (safely merges if file exists)
+- Create `.claude/skills/complete/SKILL.md` (`/complete` command)
+- Add hooks to `.claude/settings.json` (safely merges if file exists)
+- Add `.claude/private/` to `.gitignore` (sensitive content stays off git)
 - Append shelving instructions to your `CLAUDE.md`
 
 ### Requirements
@@ -74,9 +76,15 @@ Type `/complete <plan-name>` to archive a finished plan. This:
 
 Claude reads `COMPLETED.md` at session start for lightweight awareness of past work, but only digs into `.claude/completed/` when it's relevant to the current task.
 
+### Private content detection
+
+During shelving or plan completion, Claude scans the conversation for sensitive content — client names, financial data, pricing strategy, business plans, personal info. If found, it alerts you and offers to write those portions to `.claude/private/` (gitignored) instead of `.claude/history/` or `.claude/completed/`.
+
+You stay in control: Claude flags what it found and asks before writing anything sensitive to disk.
+
 ### Cross-session
 
-Shelved history persists in `.claude/history/`. When you start a new Claude Code session in the same project, it reads the TOC and can access everything from prior sessions.
+Shelved history persists in `.claude/history/`. Private notes persist in `.claude/private/`. When you start a new Claude Code session in the same project, it reads both TOCs and can access everything from prior sessions.
 
 ## What Gets Installed
 
@@ -96,7 +104,11 @@ your-project/
 │   │   ├── 2026-04-04T01-15-00.md
 │   │   ├── 2026-04-04T02-30-00.md
 │   │   └── toc.md
+│   ├── private/                        # GITIGNORED — sensitive conversation notes
+│   │   ├── 2026-04-05T14-30-00.md
+│   │   └── toc.md
 │   └── completed/                     # Archived plans (created at runtime)
+├── .gitignore                          # Updated with .claude/private/
 └── CLAUDE.md                           # Shelving instructions appended
 ```
 
@@ -105,9 +117,11 @@ your-project/
 Remove the installed files and the Context Shelf section from your CLAUDE.md:
 
 ```bash
-rm -rf .claude/hooks/context-shelf-trigger.sh .claude/skills/shelf .claude/skills/complete .claude/history .claude/completed
+rm -rf .claude/hooks/context-shelf-trigger.sh .claude/hooks/context-shelf-session-start.sh .claude/skills/shelf .claude/skills/complete .claude/history .claude/completed
+# Optionally remove .claude/private/ (contains your private notes — not in git)
 # Then remove the "# Context Shelf" section from CLAUDE.md
-# And remove the PreCompact hook from .claude/settings.json
+# And remove the hooks from .claude/settings.json
+# And remove the .claude/private/ line from .gitignore
 ```
 
 ## License

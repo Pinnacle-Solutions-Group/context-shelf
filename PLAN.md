@@ -104,9 +104,50 @@ CLAUDE.md instructs Claude to self-shelf when context feels heavy (~100k). The `
 3. Reads the specific chunk file(s) from disk
 4. Uses the detail, then lets it naturally fall out of context
 
+## Private Content Detection
+
+### Problem
+
+Conversations often contain sensitive material — client names, financial data, pricing discussions, business strategy. History chunks in `.claude/history/` and completed plans in `.claude/completed/` get committed to git. Sensitive content should never end up in a repository.
+
+### Solution
+
+The shelving process scans for sensitive content **before** writing anything. If found, Claude alerts the user and offers to write those portions to `.claude/private/` instead. The user decides — Claude flags, the user chooses.
+
+### What Gets Flagged
+
+- Client/company names discussed in non-public context
+- Financial data (revenue, costs, pricing, margins, budgets, deal sizes)
+- Pricing strategy (rate cards, models, discount structures)
+- Competitive intelligence
+- Business strategy (go-to-market, partnerships, hiring, roadmap)
+- Personal information (names, roles, contacts at client companies)
+- Legal/compliance details
+- Credentials or secrets mentioned in conversation
+
+### On Disk
+
+```
+<project-root>/
+└── .claude/
+    └── private/                    # GITIGNORED
+        ├── <timestamp>.md          # Private conversation summaries
+        └── toc.md                  # TOC for cross-session awareness
+```
+
+The installer adds `.claude/private/` to `.gitignore`. The SessionStart hook loads both the history TOC and the private TOC.
+
+### Design Decisions
+
+- **User-prompted, not silent.** Claude flags sensitive content and asks — it doesn't silently sort. This avoids false negatives (sensitive content slipping into git) and false positives (innocuous content hidden unnecessarily).
+- **Integrated into shelving, not a separate hook.** Privacy scanning happens within the same flow as history writing, so content is classified before it's written anywhere.
+- **History chunks can reference private notes** (e.g., "See private notes for client-specific details") without including the actual content.
+
 ## Open Questions
 
 1. **How does Claude know its context size?** — Can hooks inject an approximate token count? Or does Claude just estimate based on conversation length?
 2. **Format** — Plain markdown with provenance tags seems right. Structured enough to be useful, loose enough to write in-flow.
 3. **Cross-session** — History should persist. Session-start hook loads the TOC backup from disk.
 4. **Compression quality** — Err on keeping more detail early on, get more aggressive as the approach is validated.
+5. **Sensitivity calibration** — Start broad (flag anything that could be private), tighten based on user feedback.
+6. **Encryption** — Private files are plaintext on disk. Future enhancement could encrypt at rest.

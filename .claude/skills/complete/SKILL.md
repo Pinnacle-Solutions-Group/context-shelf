@@ -44,8 +44,14 @@ Format:
 
 Infer the summary from the plan's title, description, or content. Keep it under 120 characters — this is what Claude reads at session start to stay aware of past work without loading the full plans.
 
-### Step 5: Confirm
+### Step 5: Private content check
+
+Before confirming, scan the plan and the conversation around it for private or sensitive content (client names, financial data, pricing, business strategy, personal info). If found, alert the user and offer to write a private summary to `.claude/private/` — the plan in `.claude/completed/` may be committed to git.
+
+### Step 6: Confirm
 
 Tell the user:
 
 "Shelved **plan-name** to `.claude/completed/`. TOC entry added to `.claude/plans/COMPLETED.md`."
+
+If private notes were written, also mention: "Private notes saved to `.claude/private/` (gitignored)."

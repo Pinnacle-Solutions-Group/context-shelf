@@ -6,7 +6,7 @@ cat <<'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "PreCompact",
-    "additionalContext": "CONTEXT SHELF TRIGGER: Your context is about to be compacted. Instead of losing history to compaction, you MUST run the shelving process NOW before responding to anything else. Follow the shelving instructions in CLAUDE.md to write a curated history chunk to .claude/history/ and update the in-context TOC. This preserves full detail on disk while freeing context space. Do this immediately."
+    "additionalContext": "CONTEXT SHELF TRIGGER: Your context is about to be compacted. Instead of losing history to compaction, you MUST run the shelving process NOW before responding to anything else. IMPORTANT: Before writing anything, scan the conversation for private/sensitive content (client names, financial data, pricing, business strategy, personal info). If found, alert the user and offer to write sensitive content to .claude/private/ (gitignored) instead of .claude/history/. Follow the full shelving and private content instructions in CLAUDE.md. Do this immediately."
   }
 }
 EOF

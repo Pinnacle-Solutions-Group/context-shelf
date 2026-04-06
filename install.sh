@@ -14,6 +14,7 @@ mkdir -p .claude/skills/shelf
 mkdir -p .claude/skills/complete
 mkdir -p .claude/history
 mkdir -p .claude/completed
+mkdir -p .claude/private
 
 # Download hooks
 curl -fsSL "$REPO_RAW/.claude/hooks/context-shelf-trigger.sh" -o .claude/hooks/context-shelf-trigger.sh
@@ -74,6 +75,25 @@ else
   echo "  Created $SETTINGS_FILE with context-shelf hooks."
 fi
 
+# --- Ensure .claude/private is gitignored ---
+GITIGNORE=".gitignore"
+PRIVATE_PATTERN=".claude/private/"
+
+if [ -f "$GITIGNORE" ]; then
+  if grep -qF "$PRIVATE_PATTERN" "$GITIGNORE"; then
+    echo "  .gitignore already excludes $PRIVATE_PATTERN — skipping."
+  else
+    echo "" >> "$GITIGNORE"
+    echo "# Context Shelf — private conversation notes (never commit)" >> "$GITIGNORE"
+    echo "$PRIVATE_PATTERN" >> "$GITIGNORE"
+    echo "  Added $PRIVATE_PATTERN to .gitignore"
+  fi
+else
+  echo "# Context Shelf — private conversation notes (never commit)" > "$GITIGNORE"
+  echo "$PRIVATE_PATTERN" >> "$GITIGNORE"
+  echo "  Created .gitignore with $PRIVATE_PATTERN"
+fi
+
 # Append shelving instructions to CLAUDE.md
 CLAUDE_MD="CLAUDE.md"
 MARKER="# Context Shelf"
@@ -93,9 +113,14 @@ echo "  - Hook:    .claude/hooks/context-shelf-trigger.sh"
 echo "  - Skills:  .claude/skills/shelf/SKILL.md"
 echo "             .claude/skills/complete/SKILL.md"
 echo "  - Config:  .claude/settings.json"
+echo "  - Private: .claude/private/ (gitignored)"
 echo "  - Docs:    CLAUDE.md"
 echo ""
 echo "Usage:"
 echo "  - Automatic: shelving triggers before context compaction"
 echo "  - Manual:    type /shelf in Claude Code"
 echo "  - Complete:  type /complete <plan-name> to archive a finished plan"
+echo ""
+echo "Private content: /shelf and /complete will scan for sensitive content"
+echo "and offer to write it to .claude/private/ (gitignored) instead of"
+echo "committed directories."

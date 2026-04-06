@@ -72,9 +72,69 @@ When you need information from earlier in the session:
 3. Use the detail you need
 4. Let the chunk content naturally fall out of context — don't try to retain it all
 
+## Private Content Detection
+
+During **every** shelving or completion action, scan the conversation for sensitive content before writing anything to `.claude/history/` or `.claude/completed/`. This is not a separate step — it's part of the shelving process.
+
+### What Counts as Private
+
+- **Client/company names** — any named business entity discussed in a non-public context
+- **Financial data** — revenue, costs, pricing, margins, budgets, contract values, deal sizes
+- **Pricing strategy** — what to charge, pricing models, discount structures, rate cards
+- **Competitive intelligence** — competitor analysis, market positioning, win/loss analysis
+- **Business strategy** — go-to-market plans, partnerships, hiring plans, roadmap decisions
+- **Personal information** — names, roles, contacts at client companies
+- **Legal/compliance** — contract terms, regulatory concerns, legal advice
+- **Credentials or secrets** — API keys, passwords, tokens mentioned in conversation
+
+### How It Works
+
+**Before** writing a history chunk or completing a plan, check whether any content would be sensitive. If it is:
+
+1. **Alert the user.** Tell them exactly what you flagged and why:
+   ```
+   I found potentially sensitive content in this conversation:
+   - [Client Name] pricing discussion (financial data, client identity)
+   - Internal margin targets (business strategy)
+
+   Would you like me to:
+   1. Write these to .claude/private/ (gitignored) instead of .claude/history/
+   2. Include everything in .claude/history/ as normal
+   3. Let me review what you flagged first
+   ```
+
+2. **If the user chooses private:** Write the sensitive portions to `.claude/private/<timestamp>.md` organized by entity/topic. The history chunk in `.claude/history/` should reference that private notes exist (e.g., "See private notes for client-specific details") without including the actual content.
+
+3. **Update the private TOC** at `.claude/private/toc.md` with a one-liner for the new entry.
+
+### Private Summary Format
+
+```markdown
+# Private Notes: 2026-04-05T14:30
+
+## [Client/Company Name]
+- Key discussion points about this entity
+- Financial figures discussed
+- Pricing decisions or proposals
+- Contact names and roles
+
+## Pricing Strategy
+- Models considered and rationale
+- Final pricing decisions
+- Margin targets
+```
+
+### Critical Rules
+
+1. **NEVER write private content to `.claude/history/` or `.claude/completed/`** — those directories may be committed to git
+2. **`.claude/private/` is gitignored** — this is the ONLY safe location for sensitive conversation data
+3. **When in doubt, flag it.** Better to ask the user than to let something sensitive slip into git
+4. **Cross-session:** If `.claude/private/toc.md` exists, the SessionStart hook loads it. Read private files on demand.
+
 ## Session Start
 
 If `.claude/history/toc.md` exists, read it at the start of a new session to inherit prior context.
+If `.claude/private/toc.md` exists, be aware that private notes from prior sessions are available on disk.
 
 ## Plan Completion
 
