@@ -75,3 +75,16 @@ When you need information from earlier in the session:
 ## Session Start
 
 If `.claude/history/toc.md` exists, read it at the start of a new session to inherit prior context.
+
+## Plan Completion
+
+When triggered by `/complete <plan-name>`, archive a finished plan:
+
+1. **Find the plan** in `.claude/plans/` — fuzzy-match the argument against filenames
+2. **Sanity check** — warn the user if there are unchecked boxes, TODOs, or unresolved items
+3. **Move** the file to `.claude/completed/`
+4. **Update TOC** — append a one-liner to `.claude/plans/COMPLETED.md`
+
+The `COMPLETED.md` file lives in `plans/` so Claude reads it at session start. It provides lightweight awareness of past work — if something in `COMPLETED.md` looks relevant to the current task, read the full plan from `.claude/completed/`.
+
+Rule: read everything in `.claude/plans/`, ignore `.claude/completed/` unless a `COMPLETED.md` entry is relevant.

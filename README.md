@@ -63,6 +63,17 @@ Just work normally. When your context window is about to compact, Context Shelf 
 
 Type `/shelf` in Claude Code to trigger shelving at any time — useful before switching topics or when you want a checkpoint.
 
+### Complete a plan
+
+Type `/complete <plan-name>` to archive a finished plan. This:
+
+1. Fuzzy-matches the name against files in `.claude/plans/`
+2. Sanity-checks for unchecked boxes or unresolved items
+3. Moves the plan to `.claude/completed/`
+4. Appends a one-liner to `.claude/plans/COMPLETED.md`
+
+Claude reads `COMPLETED.md` at session start for lightweight awareness of past work, but only digs into `.claude/completed/` when it's relevant to the current task.
+
 ### Cross-session
 
 Shelved history persists in `.claude/history/`. When you start a new Claude Code session in the same project, it reads the TOC and can access everything from prior sessions.
@@ -76,13 +87,16 @@ your-project/
 │   │   ├── context-shelf-session-start.sh  # SessionStart hook
 │   │   └── context-shelf-trigger.sh        # PreCompact hook
 │   ├── skills/
-│   │   └── shelf/
-│   │       └── SKILL.md               # /shelf command
+│   │   ├── shelf/
+│   │   │   └── SKILL.md               # /shelf command
+│   │   └── complete/
+│   │       └── SKILL.md               # /complete command
 │   ├── settings.json                   # Hook configuration
-│   └── history/                        # Shelved chunks (created at runtime)
-│       ├── 2026-04-04T01-15-00.md
-│       ├── 2026-04-04T02-30-00.md
-│       └── toc.md
+│   ├── history/                        # Shelved chunks (created at runtime)
+│   │   ├── 2026-04-04T01-15-00.md
+│   │   ├── 2026-04-04T02-30-00.md
+│   │   └── toc.md
+│   └── completed/                     # Archived plans (created at runtime)
 └── CLAUDE.md                           # Shelving instructions appended
 ```
 
@@ -91,7 +105,7 @@ your-project/
 Remove the installed files and the Context Shelf section from your CLAUDE.md:
 
 ```bash
-rm -rf .claude/hooks/context-shelf-trigger.sh .claude/skills/shelf .claude/history
+rm -rf .claude/hooks/context-shelf-trigger.sh .claude/skills/shelf .claude/skills/complete .claude/history .claude/completed
 # Then remove the "# Context Shelf" section from CLAUDE.md
 # And remove the PreCompact hook from .claude/settings.json
 ```

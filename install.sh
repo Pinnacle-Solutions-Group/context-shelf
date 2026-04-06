@@ -11,15 +11,18 @@ echo "Installing Context Shelf..."
 # Create directories
 mkdir -p .claude/hooks
 mkdir -p .claude/skills/shelf
+mkdir -p .claude/skills/complete
 mkdir -p .claude/history
+mkdir -p .claude/completed
 
 # Download hooks
 curl -fsSL "$REPO_RAW/.claude/hooks/context-shelf-trigger.sh" -o .claude/hooks/context-shelf-trigger.sh
 curl -fsSL "$REPO_RAW/.claude/hooks/context-shelf-session-start.sh" -o .claude/hooks/context-shelf-session-start.sh
 chmod +x .claude/hooks/context-shelf-trigger.sh .claude/hooks/context-shelf-session-start.sh
 
-# Download skill
+# Download skills
 curl -fsSL "$REPO_RAW/.claude/skills/shelf/SKILL.md" -o .claude/skills/shelf/SKILL.md
+curl -fsSL "$REPO_RAW/.claude/skills/complete/SKILL.md" -o .claude/skills/complete/SKILL.md
 
 # Merge or create settings.json
 SETTINGS_FILE=".claude/settings.json"
@@ -87,10 +90,12 @@ echo ""
 echo "Context Shelf installed successfully!"
 echo ""
 echo "  - Hook:    .claude/hooks/context-shelf-trigger.sh"
-echo "  - Skill:   .claude/skills/shelf/SKILL.md"
+echo "  - Skills:  .claude/skills/shelf/SKILL.md"
+echo "             .claude/skills/complete/SKILL.md"
 echo "  - Config:  .claude/settings.json"
 echo "  - Docs:    CLAUDE.md"
 echo ""
 echo "Usage:"
 echo "  - Automatic: shelving triggers before context compaction"
 echo "  - Manual:    type /shelf in Claude Code"
+echo "  - Complete:  type /complete <plan-name> to archive a finished plan"
