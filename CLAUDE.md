@@ -126,7 +126,7 @@ During **every** shelving or completion action, scan the conversation for sensit
 
 ### Critical Rules
 
-1. **NEVER write private content to `.claude/history/` or `.claude/completed/`** — those directories may be committed to git
+1. **NEVER write private content to `.claude/history/`, `.claude/completed/`, or `.claude/cancelled/`** — those directories may be committed to git
 2. **`.claude/private/` is gitignored** — this is the ONLY safe location for sensitive conversation data
 3. **When in doubt, flag it.** Better to ask the user than to let something sensitive slip into git
 4. **Cross-session:** If `.claude/private/toc.md` exists, the SessionStart hook loads it. Read private files on demand.
@@ -147,4 +147,15 @@ When triggered by `/complete <plan-name>`, archive a finished plan:
 
 The `COMPLETED.md` file lives in `plans/` so Claude reads it at session start. It provides lightweight awareness of past work — if something in `COMPLETED.md` looks relevant to the current task, read the full plan from `.claude/completed/`.
 
-Rule: read everything in `.claude/plans/`, ignore `.claude/completed/` unless a `COMPLETED.md` entry is relevant.
+Rule: read everything in `.claude/plans/`, ignore `.claude/completed/` and `.claude/cancelled/` unless a `COMPLETED.md` or `CANCELLED.md` entry is relevant.
+
+## Plan Cancellation
+
+When triggered by `/cancel <plan-name>`, archive a plan that is no longer needed:
+
+1. **Find the plan** in `.claude/plans/` — fuzzy-match the argument against filenames
+2. **Confirm** — tell the user what the plan covers and ask for confirmation
+3. **Move** the file to `.claude/cancelled/`
+4. **Update TOC** — append a one-liner to `.claude/plans/CANCELLED.md`
+
+The `CANCELLED.md` file lives in `plans/` so Claude reads it at session start. It provides lightweight awareness of abandoned work — if something in `CANCELLED.md` looks relevant to the current task, read the full plan from `.claude/cancelled/`.
