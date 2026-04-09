@@ -12,8 +12,10 @@ echo "Installing Context Shelf..."
 mkdir -p .claude/hooks
 mkdir -p .claude/skills/shelf
 mkdir -p .claude/skills/complete
+mkdir -p .claude/skills/cancel
 mkdir -p .claude/history
 mkdir -p .claude/completed
+mkdir -p .claude/cancelled
 mkdir -p .claude/private
 
 # Download hooks
@@ -24,6 +26,7 @@ chmod +x .claude/hooks/context-shelf-trigger.sh .claude/hooks/context-shelf-sess
 # Download skills
 curl -fsSL "$REPO_RAW/.claude/skills/shelf/SKILL.md" -o .claude/skills/shelf/SKILL.md
 curl -fsSL "$REPO_RAW/.claude/skills/complete/SKILL.md" -o .claude/skills/complete/SKILL.md
+curl -fsSL "$REPO_RAW/.claude/skills/cancel/SKILL.md" -o .claude/skills/cancel/SKILL.md
 
 # Merge or create settings.json
 SETTINGS_FILE=".claude/settings.json"
@@ -112,6 +115,7 @@ echo ""
 echo "  - Hook:    .claude/hooks/context-shelf-trigger.sh"
 echo "  - Skills:  .claude/skills/shelf/SKILL.md"
 echo "             .claude/skills/complete/SKILL.md"
+echo "             .claude/skills/cancel/SKILL.md"
 echo "  - Config:  .claude/settings.json"
 echo "  - Private: .claude/private/ (gitignored)"
 echo "  - Docs:    CLAUDE.md"
@@ -120,6 +124,7 @@ echo "Usage:"
 echo "  - Automatic: shelving triggers before context compaction"
 echo "  - Manual:    type /shelf in Claude Code"
 echo "  - Complete:  type /complete <plan-name> to archive a finished plan"
+echo "  - Cancel:    type /cancel <plan-name> to archive an abandoned plan"
 echo ""
 echo "Private content: /shelf and /complete will scan for sensitive content"
 echo "and offer to write it to .claude/private/ (gitignored) instead of"
