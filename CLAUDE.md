@@ -159,3 +159,19 @@ When triggered by `/cancel <plan-name>`, archive a plan that is no longer needed
 4. **Update TOC** — append a one-liner to `.claude/plans/CANCELLED.md`
 
 The `CANCELLED.md` file lives in `plans/` so Claude reads it at session start. It provides lightweight awareness of abandoned work — if something in `CANCELLED.md` looks relevant to the current task, read the full plan from `.claude/cancelled/`.
+
+## Plan Dependencies
+
+When triggered by `/dependencies`, build a dependency graph across all plans and write it to `.claude/plans/DEPENDENCIES.md`.
+
+Plans declare dependencies via YAML frontmatter:
+
+```yaml
+---
+depends_on: [auth-refactor, db-migration]
+---
+```
+
+Each dependency is a plan name (filename without `.md`). The `/dependencies` skill scans `.claude/plans/`, `.claude/completed/`, and `.claude/cancelled/`, classifies each plan by status (complete / partial N/M / not started / cancelled / missing), and emits a Mermaid graph plus a status table to `DEPENDENCIES.md`.
+
+`DEPENDENCIES.md` is generated — do not hand-edit it. Re-run `/dependencies` after adding, completing, or cancelling plans.
