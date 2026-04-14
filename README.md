@@ -35,7 +35,9 @@ History chunks aren't raw transcripts. They're distilled records that preserve d
 
 ## Install
 
-Run this from your project root:
+### Project install
+
+Run this from your project root to install into `./.claude`:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Pinnacle-Solutions-Group/context-shelf/main/install.sh | bash
@@ -46,9 +48,23 @@ This will:
 - Create `.claude/hooks/context-shelf-trigger.sh` (PreCompact hook)
 - Create `.claude/skills/shelf/SKILL.md` (`/shelf` command)
 - Create `.claude/skills/complete/SKILL.md` (`/complete` command)
+- Create `.claude/skills/cancel/SKILL.md` (`/cancel` command)
+- Create `.claude/skills/dependencies/SKILL.md` (`/dependencies` command)
 - Add hooks to `.claude/settings.json` (safely merges if file exists)
 - Add `.claude/private/` to `.gitignore` (sensitive content stays off git)
 - Append shelving instructions to your `CLAUDE.md`
+
+### Global install
+
+To install once and have Context Shelf apply to every repo on your machine, pass `--global`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Pinnacle-Solutions-Group/context-shelf/main/install.sh | bash -s -- --global
+```
+
+This installs hooks, skills, and instructions into `~/.claude/` instead of the current project. Per-repo state (`.claude/history/`, `.claude/private/`, `.claude/plans/`, ...) is created lazily in each project as you use it.
+
+**Note:** a global install cannot edit each repo's `.gitignore` — you need to add `.claude/private/` to each project's `.gitignore` yourself to keep sensitive notes out of git.
 
 ### Requirements
 
